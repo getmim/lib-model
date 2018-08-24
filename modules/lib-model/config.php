@@ -14,7 +14,11 @@ return [
         'modules/lib-model' => ['install','update','remove']
     ],
     '__dependencies' => [
-        'required' => [],
+        'required' => [
+            [
+                'cli' => NULL
+            ]
+        ],
         'optional' => []
     ],
     'autoload' => [
@@ -30,6 +34,10 @@ return [
             'LibModel\\Library' => [
                 'type' => 'file',
                 'base' => 'modules/lib-model/library'
+            ],
+            'LibModel\\Controller' => [
+                'type' => 'file',
+                'base' => 'modules/lib-model/controller'
             ]
         ],
         'files' => []
@@ -43,8 +51,52 @@ return [
     'callback' => [
         'app' => [
             'reconfig' => [
-                'LibModel\\Library\\Config::reconfig' => true
+                'LibModel\\Library\\Config::reconfig' => TRUE
             ]
         ]
     ],
+    'gates' => [
+        'lib-model' => [
+            'host' => [
+                'value' => 'CLI'
+            ],
+            'path' => [
+                'value' => 'migrate'
+            ]
+        ]
+    ],
+    'routes' => [
+        'lib-model' => [
+            404 => [
+                'handler' => 'Cli\\Controller::show404'
+            ],
+            500 => [
+                'handler' => 'Cli\\Controller::show500'
+            ],
+            'libModelMigrateTest' => [
+                'info' => 'Test migration',
+                'path' => [
+                    'value' => 'test'
+                ],
+                'handler' => 'LibModel\\Controller\\Migrate::test'
+            ],
+            'libModelMigrateStart' => [
+                'info' => 'Start migration',
+                'path' => [
+                    'value' => 'start'
+                ],
+                'handler' => 'LibModel\\Controller\\Migrate::start'
+            ],
+            'libModelMigrateSchema' => [
+                'info' => 'Start migration and put the query to some file in target dir',
+                'path' => [
+                    'value' => 'schema (:dirname)',
+                    'params' => [
+                        'dirname' => 'any'
+                    ]
+                ],
+                'handler' => 'LibModel\\Controller\\Migrate::schema'
+            ]
+        ]
+    ]
 ];

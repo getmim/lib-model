@@ -128,3 +128,15 @@ Dan informasi lebih jelas tetang parameter `$where` bisa dilihat di `Kondisi Whe
 Jika module `lib-formatter` terpasang, beberapa tambahan type format didefinisikan oleh
 module ini seperti `multiple-object`, `object`, `chain` dan `partial`. Informasi lebih
 jelas tentang formatter bisa dilihat di `Model Formatter`.
+
+## Migrasi
+
+Module menerima route dari cli dengan perintah sebagai berikut:
+
+```
+mim [--table=..,..] migrate test
+mim [--table=..,..] migrate start
+mim [--table=..,..] migrate schema (dirname)
+```
+
+Keterangan lebih lanjut tentang perintah ini ada pada `Migrasi Model`.
