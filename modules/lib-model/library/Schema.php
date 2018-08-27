@@ -39,7 +39,7 @@ class Schema
                 $field['name'] = $name;
             unset($field);
             uasort($conf['fields'], function($a, $b){
-                return $a['index'] - $b['index'];
+                return ($a['index']??100) - ($b['index']??100);
             });
         }
         unset($conf);

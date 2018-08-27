@@ -11,7 +11,9 @@ return [
         'website' => 'http://iqbalfn.com/'
     ],
     '__files' => [
-        'modules/lib-model' => ['install','update','remove']
+        'modules/lib-model' => ['install','update','remove'],
+        'etc/locale/en-US/form/error/model.php' => ['install','update','remove'],
+        'etc/locale/id-ID/form/error/model.php' => ['install','update','remove']
     ],
     '__dependencies' => [
         'required' => [
@@ -23,21 +25,29 @@ return [
     ],
     'autoload' => [
         'classes' => [
+            'LibModel\\Controller' => [
+                'type' => 'file',
+                'base' => 'modules/lib-model/controller'
+            ],
+            'LibModel\\Formatter' => [
+                'type' => 'file',
+                'base' => 'modules/lib-model/formatter'
+            ],
             'LibModel\\Iface' => [
                 'type' => 'file',
                 'base' => 'modules/lib-model/interface'
-            ],
-            'Mim\\Model' => [
-                'type' => 'file',
-                'base' => 'modules/lib-model/system/Model.php'
             ],
             'LibModel\\Library' => [
                 'type' => 'file',
                 'base' => 'modules/lib-model/library'
             ],
-            'LibModel\\Controller' => [
+            'LibModel\\Validator' => [
                 'type' => 'file',
-                'base' => 'modules/lib-model/controller'
+                'base' => 'modules/lib-model/validator'
+            ],
+            'Mim\\Model' => [
+                'type' => 'file',
+                'base' => 'modules/lib-model/system/Model.php'
             ]
         ],
         'files' => []
@@ -96,6 +106,38 @@ return [
                     ]
                 ],
                 'handler' => 'LibModel\\Controller\\Migrate::schema'
+            ]
+        ]
+    ],
+    'libValidator' => [
+        'validators' => [
+            'unique' => 'LibModel\\Validator\\Model::unique'
+        ],
+        'errors' => [
+            '14.0' => 'form.error.model.not_unique'
+        ]
+    ],
+    'libFormatter' => [
+        'handlers' => [
+            'chain' => [
+                'handler' => 'LibModel\\Formatter\\Model::chain',
+                'collective' => true,
+                'field' => 'id'
+            ],
+            'multiple-object' => [
+                'handler' => 'LibModel\\Formatter\\Model::multipleObject',
+                'collective' => true,
+                'field' => null
+            ],
+            'object' => [
+                'handler' => 'LibModel\\Formatter\\Model::object',
+                'collective' => true,
+                'field' => null
+            ],
+            'partial' => [
+                'handler' => 'LibModel\\Formatter\\Model::partial',
+                'collective' => true,
+                'field' => 'id'
             ]
         ]
     ]

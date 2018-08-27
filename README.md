@@ -86,10 +86,8 @@ memiliki driver yang sama untuk `read` dan `write`.
 
 ## Standar Model
 
-Semua model harus meng-extends dari `Mim\Model`, dan mengimplementasikan interface
-`LibModel\Iface\Model`. Oleh karena itu, semua model harus memiliki `protected static`
-properti sebagai berikut:
-
+Semua model harus meng-extends dari `Mim\Model`. Masing-masing model juga harus memiliki
+properti-properti berikut:
 
 1. `chains::array` Daftar hubungan masing-masing field tabel ini dengan field
 tabel yang lain.
@@ -128,6 +126,12 @@ Dan informasi lebih jelas tetang parameter `$where` bisa dilihat di `Kondisi Whe
 Jika module `lib-formatter` terpasang, beberapa tambahan type format didefinisikan oleh
 module ini seperti `multiple-object`, `object`, `chain` dan `partial`. Informasi lebih
 jelas tentang formatter bisa dilihat di `Model Formatter`.
+
+## Validator
+
+Jika module `lib-validator` terpasang, maka module ini mendaftarkan satu tipe validasi
+dengan nama `unique` untuk mengecek keberadaan suatu data pada table untuk tujuan
+verifikasi.
 
 ## Migrasi
 
