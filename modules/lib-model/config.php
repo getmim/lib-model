@@ -71,6 +71,7 @@ return [
     ],
     'gates' => [
         'lib-model' => [
+            'priority' => 3000,
             'host' => [
                 'value' => 'CLI'
             ],
