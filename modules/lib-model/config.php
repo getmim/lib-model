@@ -21,7 +21,11 @@ return [
                 'cli' => NULL
             ]
         ],
-        'optional' => []
+        'optional' => [
+            [
+                'lib-model-mysql' => NULL
+            ]
+        ]
     ],
     'autoload' => [
         'classes' => [
