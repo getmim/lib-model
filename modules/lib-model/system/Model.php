@@ -33,6 +33,11 @@ class Model
         if(!isset($config->connections))
             trigger_error('No DB connection found on app config');
 
+        if(!isset($config->connections->{$conn['read']}))
+            trigger_error('DB Connection named `' . $conn['read'] . '` not found');
+        if(!isset($config->connections->{$conn['write']}))
+            trigger_error('DB Connection named `' . $conn['read'] . '` not found');
+
         $conn['read']   = $config->connections->{$conn['read']};
         $conn['write']  = $config->connections->{$conn['write']};
 
