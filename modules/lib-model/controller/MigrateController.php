@@ -139,6 +139,8 @@ class MigrateController extends \Cli\Controller
         $target = $this->req->param->dirname;
         if(substr($target,0,1) != '/')
             $target = realpath(getcwd() . '/' . $target);
+        if(!$target)
+            Bash::error('Target dir not found');
 
         $migrators = $this->getMigrators();
         if(!$migrators){
