@@ -16,8 +16,13 @@ class Model
         $model  = $options->model;
         $mfield = $options->field;
         $mself  = $options->self ?? null;
+        $mwhere = $options->where;
 
-        $row = $model::getOne([$mfield => $value]);
+        $cond = [$mfield => $value];
+        if($mwhere)
+            $cond = array_replace((array)$mwhere, $cond);
+
+        $row = $model::getOne($cond);
         if(!$row)
             return null;
 
@@ -37,5 +42,54 @@ class Model
         if($row_val == $obj)
             return null;
         return ['14.0'];
+    }
+
+    static function exists($value, $options, $object, $field, $rules): ?array{
+        if(is_null($value))
+            return null;
+        if(!$value)
+            return null;
+
+        $model  = $options->model;
+        $mfield = $options->field;
+        $mwhere = $options->where;
+
+        $cond = [$mfield => $value];
+        if($mwhere)
+            $cond = array_replace((array)$mwhere, $cond);
+
+        $row = $model::getOne($cond);
+        if($row)
+            return null;
+        return ['19.0'];
+    }
+
+    static function existsList($value, $options, $object, $field, $rules): ?array{
+        if(is_null($value))
+            return null;
+        if(!$value)
+            return null;
+
+        $value = (array)$value;
+
+        $model  = $options->model;
+        $mfield = $options->field;
+        $mwhere = $options->where;
+
+        $cond = [$mfield => $value];
+        if($mwhere)
+            $cond = array_replace((array)$mwhere, $cond);
+
+        $rows = $model::get($cond);
+        if(!$rows)
+            return ['20.0'];
+
+        $values = array_column($rows, $mfield);
+        foreach($value as $val){
+            if(!in_array($val, $values))
+                return ['20.0'];
+        }
+
+        return null;
     }
 }

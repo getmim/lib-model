@@ -116,10 +116,14 @@ return [
     ],
     'libValidator' => [
         'validators' => [
-            'unique' => 'LibModel\\Validator\\Model::unique'
+            'unique'        => 'LibModel\\Validator\\Model::unique',
+            'exists'        => 'LibModel\\Validator\\Model::exists',
+            'exists-list'   => 'LibModel\\Validator\\Model::existsList',
         ],
         'errors' => [
-            '14.0' => 'form.error.model.not_unique'
+            '14.0' => 'form.error.model.not_unique',
+            '19.0' => 'form.error.model.not_exists_on_db',
+            '20.0' => 'form.error.model.one_or_more_not_exists_on_db'
         ]
     ],
     'libFormatter' => [

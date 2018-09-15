@@ -129,9 +129,11 @@ jelas tentang formatter bisa dilihat di `Model Formatter`.
 
 ## Validator
 
-Jika module `lib-validator` terpasang, maka module ini mendaftarkan satu tipe validasi
-dengan nama `unique` untuk mengecek keberadaan suatu data pada table untuk tujuan
-verifikasi.
+Jika module `lib-validator` terpasang, maka module ini mendaftarkan tiga tipe validasi:
+
+1. `unique` Mengecek keberadaan suatu data pada table untuk tujuan verifikasi.
+1. `exists` Memastikan data ada pada suatu tabel.
+1. `exists-list` Memastikan semua data array yang dikirim ada di database.
 
 ## Migrasi
 
