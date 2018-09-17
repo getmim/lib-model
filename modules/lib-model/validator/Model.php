@@ -16,7 +16,7 @@ class Model
         $model  = $options->model;
         $mfield = $options->field;
         $mself  = $options->self ?? null;
-        $mwhere = $options->where;
+        $mwhere = $options->where ?? null;
 
         $cond = [$mfield => $value];
         if($mwhere)
@@ -52,7 +52,7 @@ class Model
 
         $model  = $options->model;
         $mfield = $options->field;
-        $mwhere = $options->where;
+        $mwhere = $options->where ?? null;
 
         $cond = [$mfield => $value];
         if($mwhere)
@@ -74,7 +74,7 @@ class Model
 
         $model  = $options->model;
         $mfield = $options->field;
-        $mwhere = $options->where;
+        $mwhere = $options->where ?? null;
 
         $cond = [$mfield => $value];
         if($mwhere)
