@@ -8,6 +8,7 @@
 namespace LibModel\Formatter;
 
 use LibFormatter\Library\Formatter;
+use LibFormatter\Object\Std;
 
 class Model
 {
@@ -21,7 +22,7 @@ class Model
     private static function asId(array $values): array{
         $result = [];
         foreach($values as $val)
-            $result[$val] = (object)['id'=>$val];
+            $result[$val] = new Std($val);
         return $result;
     }
 
