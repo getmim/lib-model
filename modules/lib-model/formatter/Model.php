@@ -172,8 +172,17 @@ class Model
     }
 
     static function object(array $values, string $field, array $objects, object $format, $options): array{
-        if(is_null($options))
-            return self::asId($values);
+        if(is_null($options)){
+            $values = self::asId($values);
+            if(isset($format->model->type)){
+                foreach($values as $index => $val){
+                    $val->id = Formatter::typeApply($format->model->type, $val->id, 'id', $val, (object)[], null);
+                    $values[$index] = $val;
+                }
+            }
+            return $values;
+        }
+        
         return self::procValues($values, $format, $options);
     }
 
