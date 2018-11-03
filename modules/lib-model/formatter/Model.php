@@ -38,9 +38,14 @@ class Model
         $model_name = $model->name;
         $model_field= $model->field ?? 'id';
 
-        $rows = $model_name::get([
+        $where = [
             $model_field => $ids
-        ]);
+        ];
+        if(is_array($options) && isset($options['_where'])){
+            $where = array_replace($where, $options['_where']);
+            unset($options['_where']);
+        }
+        $rows = $model_name::get($where);
 
         if(!$rows)
             return [];
