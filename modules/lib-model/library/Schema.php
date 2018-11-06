@@ -8,6 +8,7 @@
 namespace LibModel\Library;
 
 use Mim\Library\Fs;
+use StableSort\StableSort;
 
 class Schema
 {
@@ -38,12 +39,10 @@ class Schema
             foreach($conf['fields'] as $name => &$field)
                 $field['name'] = $name;
             unset($field);
-            
-            if(isset($a['index']) && isset($b['index'])){
-                uasort($conf['fields'], function($a, $b){
-                    return ($a['index']??100) - ($b['index']??100);
-                });
-            }
+
+            StableSort::uasort($conf['fields'], function($a, $b){
+                return ( $a['index'] ?? 100 ) - ( $b['index'] ?? 100 );
+            });
         }
         unset($conf);
 
