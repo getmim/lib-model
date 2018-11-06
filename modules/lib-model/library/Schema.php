@@ -38,9 +38,12 @@ class Schema
             foreach($conf['fields'] as $name => &$field)
                 $field['name'] = $name;
             unset($field);
-            uasort($conf['fields'], function($a, $b){
-                return ($a['index']??100) - ($b['index']??100);
-            });
+            
+            if(isset($a['index']) && isset($b['index'])){
+                uasort($conf['fields'], function($a, $b){
+                    return ($a['index']??100) - ($b['index']??100);
+                });
+            }
         }
         unset($conf);
 
