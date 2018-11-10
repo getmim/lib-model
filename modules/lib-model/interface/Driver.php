@@ -37,6 +37,7 @@ interface Driver
     public function rollback(string $conn='write'): bool;
     public function set(array $fields, array $where=[]): bool;
     public function sum(string $field, array $where=[]);
+    public function sumFs(array $fields, array $where=[]);
     public function truncate(string $target='write'): bool;
 
 }
