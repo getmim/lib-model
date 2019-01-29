@@ -14,8 +14,8 @@ interface Driver
     public function avg(string $field, array $where=[]);
     public function count(array $where=[]): int;
     public function countGroup(string $field, array $where=[]): array;
-    public function create(array $row): ?int;
-    public function createMany(array $rows): bool;
+    public function create(array $row, bool $ignore=false): ?int;
+    public function createMany(array $rows, bool $ignore=false): bool;
     public function commit(string $conn='write'): bool;
     public function dec(array $fields, array $where=[]): bool;
     public function escape(string $str): string;
