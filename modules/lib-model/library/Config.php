@@ -60,6 +60,8 @@ class Config
 
     static function reconfig(object &$configs, string $here) {
         $libc = $configs->libModel;
+        if(!is_object($libc))
+            $libc = (object)$libc;
         if(!isset($libc->connections))
             $libc->connections = (object)[];
         if(!isset($libc->drivers))
