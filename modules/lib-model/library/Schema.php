@@ -36,6 +36,8 @@ class Schema
 
         // sort the fields
         foreach($result as $model => &$conf){
+            if(!isset($conf['fields']))
+                continue;
             foreach($conf['fields'] as $name => &$field)
                 $field['name'] = $name;
             unset($field);
@@ -61,6 +63,8 @@ class Schema
         $result = [];
         $migrators = \Mim::$app->config->libModel->migrators;
         foreach($models as $model => $data){
+            if(!class_exists($model))
+                continue;
             $driver = $model::getDriver();
             if(!isset($migrators->$driver))
                 Bash::error('Migrator for driver `' . $driver . '` not found');
