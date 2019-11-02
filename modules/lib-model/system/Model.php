@@ -23,7 +23,7 @@ class Model
         $config = \Mim::$app->config->libModel;
 
         $conn = [
-            'read' => 'default',
+            'read'  => 'default',
             'write' => 'default'
         ];
 
@@ -32,6 +32,14 @@ class Model
 
         if(!isset($config->connections))
             trigger_error('No DB connection found on app config');
+
+        if(isset($config->alias)){
+            foreach($conn as $name => $target){
+                if(!isset($config->alias->$target))
+                    continue;
+                $conn[$name] = $config->alias->$target;
+            }
+        }
 
         if(!isset($config->connections->{$conn['read']}))
             trigger_error('DB Connection named `' . $conn['read'] . '` not found');
