@@ -32,6 +32,112 @@ class MigrateController extends \Cli\Controller
         return $migrators;
     }
 
+    public function dbAction(){
+        $migrators = $this->getMigrators();
+        if(!$migrators){
+            Bash::echo('No schema to compare');
+            exit;
+        }
+
+        $with_error = false;
+
+        $migrated = [];
+        $connections = \Mim::$app->config->libModel->connections;
+        $types = ['read','write'];
+
+        foreach($migrators as $model => $migrator){
+            Bash::echo('Checking database for model `' . $model . '`');
+
+            foreach($types as $type){
+                Bash::echo('Checking for `' . $type . '` connections', 3);
+
+                $conn_name = $model::getConnectionName($type);
+                if(!isset($connections->$conn_name))
+                    Bash::error('No connection named `' . $conn_name . '` found');
+
+                if(in_array($conn_name, $migrated)){
+                    Bash::echo('Success, continue...', 6);
+                }else{
+                    if(!$migrator->db($connections->$conn_name->configs)){
+                        Bash::echo('Failed: ' . $migrator->lastError(), 6);
+                        $with_error = true;
+                    }else{
+                        Bash::echo('Success, continue...', 6);
+                        $migrated[] = $conn_name;
+                    }
+                }
+            }
+        }
+
+        $msg = 'All models migrate already done';
+        if($with_error)
+            $msg.= ' with error';
+        $msg.= '.';
+
+        Bash::echo($msg);
+    }
+
+    public function schemaAction() {
+        $target = $this->req->param->dirname;
+        if(substr($target,0,1) != '/')
+            $target = realpath(getcwd() . '/' . $target);
+        if(!$target)
+            Bash::error('Target dir not found');
+
+        $migrators = $this->getMigrators();
+        if(!$migrators){
+            Bash::echo('No schema to compare');
+            exit;
+        }
+
+        $with_error = false;
+        foreach($migrators as $model => $migrator){
+            $dbname = $model::getDBName();
+            $target_file = $target . '/' . $dbname;
+
+            Bash::echo('Generating migration file for model `' . $model . '`');
+            if(!$migrator->schema($target_file)){
+                Bash::echo('Failed: ' . $migrator->lastError(), 3);
+                $with_error = true;
+            }else{
+                Bash::echo('Success, continue...', 3);
+            }
+        }
+
+        $msg = 'All model migrate generator already done';
+        if($with_error)
+            $msg.= ' with error';
+        $msg.= '.';
+
+        Bash::echo($msg);
+    }
+
+    public function startAction() {
+        $migrators = $this->getMigrators();
+        if(!$migrators){
+            Bash::echo('No schema to compare');
+            exit;
+        }
+
+        $with_error = false;
+        foreach($migrators as $model => $migrator){
+            Bash::echo('Migrating model `' . $model . '`');
+            if(!$migrator->start()){
+                Bash::echo('Failed: ' . $migrator->lastError(), 3);
+                $with_error = true;
+            }else{
+                Bash::echo('Success, continue...', 3);
+            }
+        }
+
+        $msg = 'All models migrate already done';
+        if($with_error)
+            $msg.= ' with error';
+        $msg.= '.';
+
+        Bash::echo($msg);
+    }
+
     public function testAction() {
         $migrators = $this->getMigrators();
         if(!$migrators){
@@ -107,66 +213,5 @@ class MigrateController extends \Cli\Controller
             Bash::echo($ix . ' => ' . $keys[$ix][1], 3);
 
         Bash::echo('');
-    }
-
-    public function startAction() {
-        $migrators = $this->getMigrators();
-        if(!$migrators){
-            Bash::echo('No schema to compare');
-            exit;
-        }
-
-        $with_error = false;
-        foreach($migrators as $model => $migrator){
-            Bash::echo('Migrating model `' . $model . '`');
-            if(!$migrator->start()){
-                Bash::echo('Failed: ' . $migrator->lastError(), 3);
-                $with_error = true;
-            }else{
-                Bash::echo('Success, continue...', 3);
-            }
-        }
-
-        $msg = 'All models migrate already done';
-        if($with_error)
-            $msg.= ' with error';
-        $msg.= '.';
-
-        Bash::echo($msg);
-    }
-
-    public function schemaAction() {
-        $target = $this->req->param->dirname;
-        if(substr($target,0,1) != '/')
-            $target = realpath(getcwd() . '/' . $target);
-        if(!$target)
-            Bash::error('Target dir not found');
-
-        $migrators = $this->getMigrators();
-        if(!$migrators){
-            Bash::echo('No schema to compare');
-            exit;
-        }
-
-        $with_error = false;
-        foreach($migrators as $model => $migrator){
-            $dbname = $model::getDBName();
-            $target_file = $target . '/' . $dbname;
-
-            Bash::echo('Generating migration file for model `' . $model . '`');
-            if(!$migrator->schema($target_file)){
-                Bash::echo('Failed: ' . $migrator->lastError(), 3);
-                $with_error = true;
-            }else{
-                Bash::echo('Success, continue...', 3);
-            }
-        }
-
-        $msg = 'All model migrate generator already done';
-        if($with_error)
-            $msg.= ' with error';
-        $msg.= '.';
-
-        Bash::echo($msg);
     }
 }
