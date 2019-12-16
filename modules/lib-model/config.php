@@ -88,19 +88,12 @@ return [
             500 => [
                 'handler' => 'Cli\\Controller::show500'
             ],
-            'libModelMigrateTest' => [
-                'info' => 'Test migration',
+            'libModelMigrateDb' => [
+                'info' => 'Try to create database for non exists one',
                 'path' => [
-                    'value' => 'test'
+                    'value' => 'db'
                 ],
-                'handler' => 'LibModel\\Controller\\Migrate::test'
-            ],
-            'libModelMigrateStart' => [
-                'info' => 'Start migration',
-                'path' => [
-                    'value' => 'start'
-                ],
-                'handler' => 'LibModel\\Controller\\Migrate::start'
+                'handler' => 'LibModel\\Controller\\Migrate::db'
             ],
             'libModelMigrateSchema' => [
                 'info' => 'Start migration and put the query to some file in target dir',
@@ -111,6 +104,20 @@ return [
                     ]
                 ],
                 'handler' => 'LibModel\\Controller\\Migrate::schema'
+            ],
+            'libModelMigrateStart' => [
+                'info' => 'Start migration',
+                'path' => [
+                    'value' => 'start'
+                ],
+                'handler' => 'LibModel\\Controller\\Migrate::start'
+            ],
+            'libModelMigrateTest' => [
+                'info' => 'Test migration',
+                'path' => [
+                    'value' => 'test'
+                ],
+                'handler' => 'LibModel\\Controller\\Migrate::test'
             ]
         ]
     ],
