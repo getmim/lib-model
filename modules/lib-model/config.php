@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.1.0',
+    '__version' => '0.2.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
@@ -141,6 +141,11 @@ return [
             'object' => [
                 'handler' => 'LibModel\\Formatter\\Model::object',
                 'collective' => true,
+                'field' => null
+            ],
+            'object-switch' => [
+                'handler' => 'LibModel\\Formatter\\Model::objectSwitch',
+                'collective' => false,
                 'field' => null
             ],
             'partial' => [

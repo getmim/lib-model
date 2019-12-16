@@ -191,6 +191,25 @@ class Model
         return self::procValues($values, $format, $options);
     }
 
+    static function objectSwitch($value, string $field, object $object, object $format, $options){
+        if(is_null($options))
+            return new Std($value);
+
+        $case_field = $format->field;
+        $case_value = $object->{$case_field};
+        $cases      = $format->cases;
+
+        if(!isset($cases->{$case_value}))
+            return new Std($value);
+
+        $case   = $cases->{$case_value};
+        $result = self::object([$value], $field, [$object], $case, $options);
+
+        if(!$result)
+            return new Std($value);
+        return $result[$value];
+    }
+
     static function partial(array $values, string $field, array $objects, object $format, $options): array{
         if(is_null($options))
             return self::asNull($values);
