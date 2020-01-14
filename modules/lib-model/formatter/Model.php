@@ -192,9 +192,6 @@ class Model
     }
 
     static function objectSwitch($value, string $field, object $object, object $format, $options){
-        if(is_null($options))
-            return new Std($value);
-
         $case_field = $format->field;
         $case_value = $object->{$case_field};
         $cases      = $format->cases;
@@ -202,7 +199,15 @@ class Model
         if(!isset($cases->{$case_value}))
             return new Std($value);
 
-        $case   = $cases->{$case_value};
+        $case = $cases->{$case_value};
+
+        if(is_null($options)){
+            $value = new Std($value);
+            if(isset($case->model->type))
+                $value->id = Formatter::typeApply($case->model->type, $value->id, 'id', $value, (object)[], null);
+            return $value;
+        }
+
         $result = self::object([$value], $field, [$object], $case, $options);
 
         if(!$result)
