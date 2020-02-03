@@ -191,30 +191,57 @@ class Model
         return self::procValues($values, $format, $options);
     }
 
-    static function objectSwitch($value, string $field, object $object, object $format, $options){
+    static function objectSwitch(array $values, string $field, array $objects, object $format, $options): array{
         $case_field = $format->field;
-        $case_value = $object->{$case_field};
         $cases      = $format->cases;
 
-        if(!isset($cases->{$case_value}))
-            return new Std($value);
+        $map_values = [];
+        foreach($objects as $object){
+            $case_value = $object->{$case_field};
+            $obj_value  = $object->$field;
+            if(is_null($obj_value))
+                continue;
 
-        $case = $cases->{$case_value};
-
-        if(is_null($options)){
-            $value = new Std($value);
-            if(isset($case->model->type))
-                $value->id = Formatter::typeApply($case->model->type, $value->id, 'id', $value, (object)[], null);
-            return $value;
+            if(!isset($map_values[$case_value])){
+                $map_values[$case_value] = (object)[
+                    'case'   => $case_value,
+                    'values' => [],
+                    'result' => []
+                ];
+            }
+            $map_values[$case_value]->values[] = $object->$field;
         }
 
-        $result = self::object([$value], $field, [$object], $case, $options);
+        foreach($map_values as $type => &$vals){
+            $vals->values = array_unique($vals->values);
 
-        if(!$result)
-            return new Std($value);
-        return $result[$value];
+            if(!isset($cases->{$type})){
+                foreach($vals->values as $val)
+                    $vals->result[$val] = new Std($value);
+                continue;
+            }
+
+            $case   = $cases->{$type};
+            $vals->result = self::procValues($vals->values, $case, $options);
+        }
+        unset($vals);
+
+        $result = [];
+
+        foreach($objects as $object){
+            $case_value = $object->{$case_field};
+            $obj_value  = $object->$field;
+            $obj_id     = $object->id;
+            if(is_null($obj_value))
+                continue;
+
+            $case_result = $map_values[$case_value]->result;
+            $result[$obj_id] = $case_result[$obj_value] ?? new Std($obj_value);
+        }
+
+        return $result;
     }
-
+    
     static function partial(array $values, string $field, array $objects, object $format, $options): array{
         if(is_null($options))
             return self::asNull($values);
