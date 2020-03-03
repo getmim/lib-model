@@ -217,7 +217,7 @@ class Model
 
             if(!isset($cases->{$type})){
                 foreach($vals->values as $val)
-                    $vals->result[$val] = new Std($value);
+                    $vals->result[$val] = new Std($val);
                 continue;
             }
 
