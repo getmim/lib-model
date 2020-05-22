@@ -51,6 +51,8 @@ class Schema
         if(!$tables)
             return $result;
         foreach($result as $model => $opts){
+            if(!class_exists($model))
+                continue;
             $table = $model::getTable();
             if(in_array($table, $tables))
                 $filtered_result[$model] = $opts;
