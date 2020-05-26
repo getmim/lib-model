@@ -13,7 +13,12 @@ use StableSort\StableSort;
 class Schema
 {
 
-    static function collectSchema(array $tables=[]): array {
+    /**
+     * @param array $t_includes List of table to include. Include all on falsy.
+     * @param array $c_excludes List of connections name to exclude. Include all on falsy.
+     * @return array
+     */
+    static function collectSchema(array $t_includes=[], array $c_excludes=[]): array {
         $result = [];
 
         $modules = Fs::scan(BASEPATH . '/modules');
@@ -48,14 +53,24 @@ class Schema
         }
         unset($conf);
 
-        if(!$tables)
+        if(!$t_includes && !$c_excludes)
             return $result;
+
         foreach($result as $model => $opts){
             if(!class_exists($model))
                 continue;
             $table = $model::getTable();
-            if(in_array($table, $tables))
-                $filtered_result[$model] = $opts;
+
+            if($c_excludes){
+                $conn = $model::getConnectionName('write');
+                if(in_array($conn, $c_excludes))
+                    continue;
+            }
+
+            if($t_includes && !in_array($table, $t_includes))
+                continue;
+
+            $filtered_result[$model] = $opts;
         }
 
         return $filtered_result;

@@ -60,6 +60,12 @@ return [
         'target' => [
             'read' => 'default2',
             'write' => 'other-connection'
+        ],
+
+        'migrate' => [
+            'ignore' => [
+                'connections' => ['default','other-connection']
+            ]
         ]
     ]
     // ...
@@ -83,6 +89,10 @@ Opsi ketiga adalah `target`, yang menentukan default koneksi untuk `read` dan `w
 Jika target koneksi suatu model tidak didefinisikan, atau hanya mendefinisikan satu
 saja, maka sisanya diambil dari konfigurasi ini. Sebagai catatan, suatu model harus
 memiliki driver yang sama untuk `read` dan `write`.
+
+Opsi ke empat adalah `migrate` yang menentukan bagaimana proses migrasi database dilakukan.
+Untuk saat ini, opsi yang didukung adalah `ignore` yang menentukan daftar koneksi yang tidak
+akan di proses pada saat migrasi database.
 
 ## Standar Model
 

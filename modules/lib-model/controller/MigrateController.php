@@ -23,7 +23,9 @@ class MigrateController extends \Cli\Controller
             });
         }
 
-        $result = Schema::collectSchema($tables);
+        $c_excludes = \Mim::$app->config->libModel->migrate->ignore->connections ?? [];
+
+        $result = Schema::collectSchema($tables, $c_excludes);
         if(!$result)
             return null;
 
