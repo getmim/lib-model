@@ -23,11 +23,16 @@ class Schema
 
         $modules = Fs::scan(BASEPATH . '/modules');
         foreach($modules as $module){
-            $module_migrate_file = BASEPATH . '/modules/' . $module . '/migrate.php';
-            if(!is_file($module_migrate_file))
-                continue;
-            $module_migrate = include $module_migrate_file;
-            $result = array_replace_recursive($result, $module_migrate);
+            $migrate_files = [
+                BASEPATH . '/modules/' . $module . '/migrate.php',
+                BASEPATH . '/app/' . $module . '/migrate.php'
+            ];
+            foreach($migrate_files as $module_migrate_file){
+                if(!is_file($module_migrate_file))
+                    continue;
+                $module_migrate = include $module_migrate_file;
+                $result = array_replace_recursive($result, $module_migrate);
+            }
         }
 
         // app migrate?
