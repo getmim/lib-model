@@ -150,9 +150,10 @@ Jika module `lib-validator` terpasang, maka module ini mendaftarkan tiga tipe va
 Module menerima route dari cli dengan perintah sebagai berikut:
 
 ```
+mim [--table=..,..] migrate db
 mim [--table=..,..] migrate test
 mim [--table=..,..] migrate start
 mim [--table=..,..] migrate schema (dirname)
 ```
 
-Keterangan lebih lanjut tentang perintah ini ada pada `Migrasi Model`.
+Keterangan lebih lanjut tentang perintah ini ada pada [Migrasi Model](https://getmim.github.io/modules/lib-model/migrasi/).
