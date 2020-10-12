@@ -53,10 +53,8 @@ class Config
         $used_conns = (object)[];
         foreach($libc->connections as $name => $conf){
             $conf->name = $name;
-            if(!is_array($conf->configs)){
+            if(!is_array($conf->configs))
                 $conf->configs = (array)$conf->configs;
-                $conf->configs = array_values($conf->configs);
-            }
             $used_conns->$name = $conf;
         }
         $libc->connections = $used_conns;
