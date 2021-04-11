@@ -2,7 +2,7 @@
 /**
  * Lib model formatter ( lib-formatter )
  * @package lib-model
- * @version 0.0.1
+ * @version 0.7.0
  */
 
 namespace LibModel\Formatter;
@@ -95,7 +95,7 @@ class Model
 
         return $as_key;
     }
-    
+
     static function chain(array $values, string $field, array $objects, object $format, $options): array{
         if(is_null($options))
             return self::asArray($values);
@@ -141,7 +141,29 @@ class Model
         return $result;
     }
 
-    static function multipleObject(array $values, string $field, array $objects, object $format, $options): array{
+    static function children(array $values, string $field, array $objects, object $format, $options): array
+    {
+        if(is_null($options))
+            return self::asArray($values);
+
+        $children = self::procValues($values, $format, $options);
+        $result   = [];
+        $parent   = $format->model->field;
+
+        foreach($children as $child){
+            $par_id = (int)(string)$child->$parent;
+
+            if(!isset($result[$par_id]))
+                $result[$par_id] = [];
+
+            $result[$par_id][] = $child;
+        }
+
+        return $result;
+    }
+
+    static function multipleObject(array $values, string $field, array $objects, object $format, $options): array
+    {
         $sep = $format->separator ?? ',';
         $objs_id = [];
         $val_ids = [];
@@ -176,7 +198,8 @@ class Model
         return $result;
     }
 
-    static function object(array $values, string $field, array $objects, object $format, $options): array{
+    static function object(array $values, string $field, array $objects, object $format, $options): array
+    {
         if(is_null($options)){
             $values = self::asId($values);
             if(isset($format->model->type)){
@@ -187,11 +210,12 @@ class Model
             }
             return $values;
         }
-        
+
         return self::procValues($values, $format, $options);
     }
 
-    static function objectSwitch(array $values, string $field, array $objects, object $format, $options): array{
+    static function objectSwitch(array $values, string $field, array $objects, object $format, $options): array
+    {
         $case_field = $format->field;
         $cases      = $format->cases;
 
@@ -241,8 +265,9 @@ class Model
 
         return $result;
     }
-    
-    static function partial(array $values, string $field, array $objects, object $format, $options): array{
+
+    static function partial(array $values, string $field, array $objects, object $format, $options): array
+    {
         if(is_null($options))
             return self::asNull($values);
         return self::procValues($values, $format, $options);

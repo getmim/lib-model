@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.6.1',
+    '__version' => '0.7.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
@@ -137,6 +137,11 @@ return [
         'handlers' => [
             'chain' => [
                 'handler' => 'LibModel\\Formatter\\Model::chain',
+                'collective' => true,
+                'field' => 'id'
+            ],
+            'children' => [
+                'handler' => 'LibModel\\Formatter\\Model::children',
                 'collective' => true,
                 'field' => 'id'
             ],
