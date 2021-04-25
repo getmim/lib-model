@@ -2,7 +2,7 @@
 /**
  * Lib model formatter ( lib-formatter )
  * @package lib-model
- * @version 0.7.0
+ * @version 0.7.1
  */
 
 namespace LibModel\Formatter;
@@ -33,10 +33,12 @@ class Model
         return $result;
     }
 
-    private static function procValues(array $ids, object $format, $options): array{
+    private static function procValues(array $ids, object $format, $options, string $key_prop = null): array{
         $model = $format->model;
-        $model_name = $model->name;
-        $model_field= $model->field ?? 'id';
+        $model_name  = $model->name;
+        $model_field = $model->field ?? 'id';
+        if(!$key_prop)
+            $key_prop = $model_field;
 
         $where = [
             $model_field => $ids
@@ -50,7 +52,7 @@ class Model
         if(!$rows)
             return [];
 
-        $as_key = prop_as_key($rows, $model_field);
+        $as_key = prop_as_key($rows, $key_prop);
 
         // filter one field only
         if(isset($format->field)){
@@ -90,7 +92,7 @@ class Model
         if(isset($format->format) && !isset($format->field)){
             if(!is_array($options))
                 $options = [];
-            $as_key = Formatter::formatMany($format->format, $as_key, $options, $model_field);
+            $as_key = Formatter::formatMany($format->format, $as_key, $options, $key_prop);
         }
 
         return $as_key;
@@ -146,7 +148,7 @@ class Model
         if(is_null($options))
             return self::asArray($values);
 
-        $children = self::procValues($values, $format, $options);
+        $children = self::procValues($values, $format, $options, 'id');
         $result   = [];
         $parent   = $format->model->field;
 
