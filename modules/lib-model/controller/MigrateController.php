@@ -169,7 +169,9 @@ class MigrateController extends \Cli\Controller
             if(!$res)
                 continue;
             
-            $model_len = strlen($model);
+            $model_conn = $model::getConnectionName() . '::' . $model;
+
+            $model_len = strlen($model_conn);
             if($model_length < $model_len)
                 $model_length = $model_len;
 
@@ -181,9 +183,10 @@ class MigrateController extends \Cli\Controller
                         $exists_diff[] = $ix;
                 }
             }
-            $result[$model] = implode(', ', $res_text);
 
-            $result_len = strlen($result[$model]);
+            $result[$model_conn] = implode(', ', $res_text);
+
+            $result_len = strlen($result[$model_conn]);
             if($result_length < $result_len)
                 $result_length = $result_len;
         }
