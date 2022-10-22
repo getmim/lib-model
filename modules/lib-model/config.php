@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.8.0',
+    '__version' => '0.9.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
