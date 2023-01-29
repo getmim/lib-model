@@ -9,6 +9,7 @@ namespace LibModel\Formatter;
 
 use LibFormatter\Library\Formatter;
 use LibFormatter\Object\Std;
+use LibFormatter\Object\Number;
 
 class Model
 {
@@ -159,6 +160,28 @@ class Model
                 $result[$par_id] = [];
 
             $result[$par_id][] = $child;
+        }
+
+        return $result;
+    }
+
+    static function count(array $values, string $field, array $objects, object $format, $options): array
+    {
+        if (is_null($options)) {
+            return self::asNull($values);
+        }
+
+        $config = $format->model;
+        $model = $config->name;
+        $field = $config->field;
+        $where = [$field => $values];
+        if (isset($options['_where'])) {
+            $where = array_replace($where, $options['_where']);
+        }
+
+        $rows = $model::countGroup($field, $where);
+        foreach ($rows as $id => $value) {
+            $result[$id] = new Number($value);
         }
 
         return $result;

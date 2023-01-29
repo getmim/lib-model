@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.9.0',
+    '__version' => '0.10.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
@@ -162,6 +162,11 @@ return [
             ],
             'partial' => [
                 'handler' => 'LibModel\\Formatter\\Model::partial',
+                'collective' => true,
+                'field' => 'id'
+            ],
+            'count' => [
+                'handler' => 'LibModel\\Formatter\\Model::count',
                 'collective' => true,
                 'field' => 'id'
             ]
