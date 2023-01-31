@@ -175,6 +175,7 @@ class Model
         $model = $config->name;
         $field = $config->field;
         $where = [$field => $values];
+        $result = [];
         if (isset($options['_where'])) {
             $where = array_replace($where, $options['_where']);
         }
