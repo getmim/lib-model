@@ -194,29 +194,42 @@ class Model
         $objs_id = [];
         $val_ids = [];
 
-        foreach($values as $val){
-            $vals = explode($sep, $val);
+        foreach ($values as $val) {
+            if ($sep == 'json') {
+                $vals = json_decode($val);
+            } else {
+                $vals = explode($sep, $val);
+            }
             $objs_id = array_merge($objs_id, $vals);
             $val_ids[$val] = $vals;
         }
 
-        if(!$objs_id)
+        if (!$objs_id) {
             return [];
+        }
 
         $objs_id = array_unique($objs_id);
 
         $result = [];
 
-        if(is_null($options))
+        if (is_null($options)) {
             $objs_id = self::asId($objs_id);
-        else
+            if(isset($format->model->type)){
+                foreach($objs_id as $index => $val){
+                    $val->id = Formatter::typeApply($format->model->type, $val->id, 'id', $val, (object)[], null);
+                    $objs_id[$index] = $val;
+                }
+            }
+        } else {
             $objs_id = self::procValues($objs_id, $format, $options);
+        }
 
-        foreach($val_ids as $key => $ids){
+        foreach ($val_ids as $key => $ids) {
             $key_values = [];
-            foreach($ids as $id){
-                if(isset($objs_id[$id]))
+            foreach ($ids as $id) {
+                if (isset($objs_id[$id])) {
                     $key_values[] = $objs_id[$id];
+                }
             }
             $result[$key] = $key_values;
         }

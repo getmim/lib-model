@@ -8,6 +8,7 @@
 namespace LibModel\Library;
 
 use Mim\Library\Fs;
+use Cli\Library\Bash;
 use StableSort\StableSort;
 
 class Schema
@@ -83,7 +84,11 @@ class Schema
 
     static function getMigrator(array $models): array{
         $result = [];
-        $migrators = \Mim::$app->config->libModel->migrators;
+        $migrators = \Mim::$app->config->libModel->migrators ?? null;
+        if (!$migrators) {
+            Bash::error('No database driver installed');
+        }
+
         foreach($models as $model => $data){
             if(!class_exists($model))
                 continue;
