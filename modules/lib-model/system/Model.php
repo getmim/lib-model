@@ -2,7 +2,7 @@
 /**
  * Model base
  * @package lib-model
- * @version 0.0.1
+ * @version 0.11.0
  */
 
 namespace Mim;
@@ -12,9 +12,14 @@ class Model
     private static $models = [];
 
     private static function buildModel($model){
+        $table = $model::$table;
+        if (method_exists($model, 'dynamicTable')) {
+            $table = $model::dynamicTable();
+        }
+
         $options = [
             'model' => $model,
-            'table' => $model::$table,
+            'table' => $table,
             'chains' => $model::$chains,
             'q_field' => $model::$q,
             'connections' => ['write'=>null, 'read'=>null]
