@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.11.0',
+    '__version' => '0.12.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
@@ -18,12 +18,12 @@ return [
     '__dependencies' => [
         'required' => [
             [
-                'cli' => NULL
+                'cli' => null
             ]
         ],
         'optional' => [
             [
-                'lib-model-mysql' => NULL
+                'lib-model-mysql' => null
             ]
         ]
     ],
@@ -65,7 +65,7 @@ return [
     'callback' => [
         'app' => [
             'reconfig' => [
-                'LibModel\\Library\\Config::reconfig' => TRUE
+                'LibModel\\Library\\Config::reconfig' => true
             ]
         ]
     ],
