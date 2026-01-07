@@ -2,7 +2,7 @@
 /**
  * Model driver interface
  * @package lib-model
- * @version 0.12.0
+ * @version 0.13.0
  */
 
 namespace LibModel\Iface;
@@ -65,7 +65,7 @@ interface Driver
 
     public function setTable(string $table): void;
 
-    public function setTableShard(string $shard): void;
+    public function setTableShard(string $shard, bool $create = true): bool;
 
     public function sum(string $field, array $where = []);
 
