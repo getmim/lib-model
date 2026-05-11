@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-model',
-    '__version' => '0.14.0',
+    '__version' => '1.0.0',
     '__git' => 'git@github.com:getmim/lib-model.git',
     '__license' => 'MIT',
     '__author' => [
@@ -98,10 +98,7 @@ return [
             'libModelMigrateSchema' => [
                 'info' => 'Start migration and put the query to some file in target dir',
                 'path' => [
-                    'value' => 'schema (:dirname)',
-                    'params' => [
-                        'dirname' => 'any'
-                    ]
+                    'value' => 'schema'
                 ],
                 'handler' => 'LibModel\\Controller\\Migrate::schema'
             ],

@@ -2,7 +2,7 @@
 /**
  * MigrateController
  * @package lib-model
- * @version 0.0.1
+ * @version 1.0.0
  */
 
 namespace LibModel\Controller;
@@ -14,11 +14,12 @@ use LibModel\Library\Schema;
 class MigrateController extends \Cli\Controller
 {
 
-    private function getMigrators(): ?array{
+    protected function getMigrators(): ?array
+    {
         $tables = getopt('', ['table::']);
-        if(isset($tables['table'])){
+        if (isset($tables['table'])) {
             $tables = explode(',', $tables['table']);
-            array_walk($tables, function(&$a){
+            array_walk($tables, function (&$a) {
                 $a = trim($a);
             });
         }
@@ -26,17 +27,19 @@ class MigrateController extends \Cli\Controller
         $c_excludes = \Mim::$app->config->libModel->migrate->ignore->connections ?? [];
 
         $result = Schema::collectSchema($tables, $c_excludes);
-        if(!$result)
+        if (!$result) {
             return null;
+        }
 
         $migrators = Schema::getMigrator($result);
 
         return $migrators;
     }
 
-    public function dbAction(){
+    public function dbAction()
+    {
         $migrators = $this->getMigrators();
-        if(!$migrators){
+        if (!$migrators) {
             Bash::echo('No schema to compare');
             exit;
         }
@@ -47,23 +50,24 @@ class MigrateController extends \Cli\Controller
         $connections = \Mim::$app->config->libModel->connections;
         $types = ['read','write'];
 
-        foreach($migrators as $model => $migrator){
+        foreach ($migrators as $model => $migrator) {
             Bash::echo('Checking database for model `' . $model . '`');
 
-            foreach($types as $type){
+            foreach ($types as $type) {
                 Bash::echo('Checking for `' . $type . '` connections', 3);
 
                 $conn_name = $model::getConnectionName($type);
-                if(!isset($connections->$conn_name))
+                if (!isset($connections->$conn_name)) {
                     Bash::error('No connection named `' . $conn_name . '` found');
+                }
 
-                if(in_array($conn_name, $migrated)){
+                if (in_array($conn_name, $migrated)) {
                     Bash::echo('Success, continue...', 6);
-                }else{
-                    if(!$migrator->db($connections->$conn_name->configs)){
+                } else {
+                    if (!$migrator->db($connections->$conn_name->configs)) {
                         Bash::echo('Failed: ' . $migrator->lastError(), 6);
                         $with_error = true;
-                    }else{
+                    } else {
                         Bash::echo('Success, continue...', 6);
                         $migrated[] = $conn_name;
                     }
@@ -72,151 +76,129 @@ class MigrateController extends \Cli\Controller
         }
 
         $msg = 'All models migrate already done';
-        if($with_error)
+        if ($with_error) {
             $msg.= ' with error';
+        }
         $msg.= '.';
 
         Bash::echo($msg);
     }
 
-    public function schemaAction() {
-        $target = $this->req->param->dirname;
-        if(substr($target,0,1) != '/')
-            $target = realpath(getcwd() . '/' . $target);
-        if(!$target)
-            Bash::error('Target dir not found');
-
+    public function schemaAction()
+    {
         $migrators = $this->getMigrators();
-        if(!$migrators){
+        if (!$migrators) {
             Bash::echo('No schema to compare');
             exit;
         }
 
         $with_error = false;
-        foreach($migrators as $model => $migrator){
-            $dbname = $model::getDBName();
-            $target_file = $target . '/' . $dbname;
+        foreach ($migrators as $model => $migrator) {
+            $shards = $migrator->getShards();
+            if (!$shards) {
+                $shards = [$model::getTable()];
+            }
 
-            Bash::echo('Generating migration file for model `' . $model . '`');
-            if(!$migrator->schema($target_file)){
-                Bash::echo('Failed: ' . $migrator->lastError(), 3);
-                $with_error = true;
-            }else{
-                Bash::echo('Success, continue...', 3);
+            foreach ($shards as $shard) {
+                if (!$migrator->schema($shard)) {
+                    Bash::echo('Failed: ' . $migrator->lastError(), 3);
+                    $with_error = true;
+                }
             }
         }
-
-        $msg = 'All model migrate generator already done';
-        if($with_error)
-            $msg.= ' with error';
-        $msg.= '.';
-
-        Bash::echo($msg);
     }
 
-    public function startAction() {
+    public function startAction()
+    {
         $migrators = $this->getMigrators();
-        if(!$migrators){
+        if (!$migrators) {
             Bash::echo('No schema to compare');
             exit;
         }
 
         $with_error = false;
-        foreach($migrators as $model => $migrator){
-            Bash::echo('Migrating model `' . $model . '`');
-            if(!$migrator->start()){
-                Bash::echo('Failed: ' . $migrator->lastError(), 3);
-                $with_error = true;
-            }else{
-                Bash::echo('Success, continue...', 3);
+        foreach ($migrators as $model => $migrator) {
+            $shards = $migrator->getShards();
+            if (!$shards) {
+                $shards = [$model::getTable()];
+            }
+
+            foreach ($shards as $shard) {
+                if (!$migrator->start($shard)) {
+                    Bash::echo($model . ':' . $shard);
+                    Bash::echo('Error: ' . $migrator->lastError(), 3);
+                    $with_error = true;
+                }
             }
         }
 
         $msg = 'All models migrate already done';
-        if($with_error)
+        if ($with_error) {
             $msg.= ' with error';
+        }
         $msg.= '.';
 
         Bash::echo($msg);
     }
 
-    public function testAction() {
+    public function testAction()
+    {
         $migrators = $this->getMigrators();
-        if(!$migrators){
+        if (!$migrators) {
             Bash::echo('No schema to compare');
             exit;
         }
 
         $result = [];
-        $model_length = 0;
-        $result_length = 0;
 
-        $keys = [
-            'tc' => ['table_create', 'Create the table of the model'],
-            'fc' => ['field_create', 'Add new column to the table'],
-            'fu' => ['field_update', 'Update exists column on the table'],
-            'fd' => ['field_delete', 'Delete exists column from the table'],
-            'ic' => ['index_create', 'Create new index for the table'],
-            'iu' => ['index_update', 'Update exists index of the table'],
-            'id' => ['index_delete', 'Delete exists index on the table'],
-            'dc' => ['data_create', 'Insert new row to the table']
-        ];
-
-        $exists_diff = [];
-
-        foreach($migrators as $model => $migrator){
-            $res = $migrator->test();
-            if(!$res)
-                continue;
-            
-            $model_conn = $model::getConnectionName() . '::' . $model;
-
-            $model_len = strlen($model_conn);
-            if($model_length < $model_len)
-                $model_length = $model_len;
-
-            $res_text = [];
-            foreach($keys as $ix => $iv){
-                if(isset($res[$iv[0]])){
-                    $res_text[] = $ix;
-                    if(!in_array($ix, $exists_diff))
-                        $exists_diff[] = $ix;
-                }
+        foreach ($migrators as $model => $migrator) {
+            $shards = $migrator->getShards();
+            if (!$shards) {
+                $shards = [$model::getTable()];
             }
 
-            $result[$model_conn] = implode(', ', $res_text);
+            foreach ($shards as $index => $shard) {
+                $res = $migrator->test($shard);
+                if (!$res) {
+                    continue;
+                }
 
-            $result_len = strlen($result[$model_conn]);
-            if($result_length < $result_len)
-                $result_length = $result_len;
+                $model_conn = $model::getConnectionName();
+                $model_table = $model::getTable();
+
+                foreach ($res as $act => $cols) {
+                    foreach ($cols as $col) {
+                        $row = ['',''];
+                        if (!$index) {
+                            $row = [
+                                $model_conn,
+                                $model
+                            ];
+                        }
+
+                        $row[] = $model_table;
+                        $row[] = $col['name'];
+                        $row[] = $act;
+
+                        $result[] = $row;
+                    }
+                }
+            }
         }
 
-        if(!$result){
+        if (!$result) {
             Bash::echo('No different found between schema and database');
             exit;
         }
 
-        $model_length+= 4;
-        $result_length+= 4;
+        $headers = [
+            'CONNECTION',
+            'MODEL',
+            'TABLE',
+            'COLUMN',
+            'ACTION'
+        ];
 
-        Bash::echo('');
-        Bash::echo(str_pad('MODEL', $model_length, ' ') . '| RESULT', 2);
-        Bash::echo(str_pad('', $model_length, '-') . '|-' . str_pad('', $result_length, '-'), 2);
-
-        foreach($result as $model => $res){
-            Bash::echo(
-                str_pad($model, $model_length, ' ')
-                . '| '
-                . $res
-                , 2
-            );
-        }
-
-        Bash::echo('');
-
-        foreach($exists_diff as $ix)
-            Bash::echo($ix . ' => ' . $keys[$ix][1], 3);
-
-        Bash::echo('');
+        Bash::table($result, $headers);
     }
 }

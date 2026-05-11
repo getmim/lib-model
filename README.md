@@ -158,7 +158,7 @@ Module menerima route dari cli dengan perintah sebagai berikut:
 mim [--table=..,..] migrate db
 mim [--table=..,..] migrate test
 mim [--table=..,..] migrate start
-mim [--table=..,..] migrate schema (dirname)
+mim [--table=..,..] migrate schema
 ```
 
 Keterangan lebih lanjut tentang perintah ini ada pada [Migrasi Model](https://getmim.github.io/modules/lib-model/migrasi/).
