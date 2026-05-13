@@ -174,6 +174,14 @@ class MigrateController extends \Cli\Controller
                                 $model_conn,
                                 $model
                             ];
+
+                            if ($act == 'table_create') {
+                                $row[] = $model_table;
+                                $row[] = '';
+                                $row[] = $act;
+                                $result[] = $row;
+                                break;
+                            }
                         }
 
                         $row[] = $model_table;
